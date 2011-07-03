@@ -4,7 +4,7 @@ use Getopt::Long; # for flags with --
 my %options
 
 sub main {
-parseargs()
+parseargs();
 
 }
 sub parseargs()
@@ -30,3 +30,6 @@ sub usage()
 	exit(0);
 
 }
+
+
+main();
