@@ -11,6 +11,7 @@ sub parseargs()
 {
 	my $validopts = "bEn";
 	getopt($validopt,\%options) or usage();
+	print "hello\n";
 }
 sub usage()
 {
