@@ -44,4 +44,4 @@ sub prockill($){
 
 
 
-true;
+1;
