@@ -14,13 +14,13 @@
 
 </head>
 <body>
-<div style="position: absolute;top: 0;left: 0;width: 100px;">
-<li>Processes Management</li>
-<li>User Managment</li>
-<li>File Managment</li>
-<li>Statistics</li>
+<div style="position: absolute;top: 0;left: 10;width: 100px;">
+<li><a href="~/process">Processes Management</a></li>
+<li><a href="~/users">User Managment</a></li>
+<li><a href="~/files">File Managment</a></li>
+<li><a href="~/statistics">Statistics</a></li>
 </div>
-<div style="margin: 0 10em;"><% content %></div>
+<div style="margin:10em;"><% content %></div>
 
 <div id="footer">
 Powered by <a href="http://perldancer.org/">Dancer</a> <% dancer_version %>
