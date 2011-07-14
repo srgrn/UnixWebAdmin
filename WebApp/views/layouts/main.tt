@@ -14,8 +14,13 @@
 
 </head>
 <body>
-
-<% content %>
+<div width="150px">
+<li>Processes Management</li>
+<li>User Managment</li>
+<li>File Managment</li>
+<li>Statistics</li>
+</div>
+<div><% content %></div>
 
 <div id="footer">
 Powered by <a href="http://perldancer.org/">Dancer</a> <% dancer_version %>
