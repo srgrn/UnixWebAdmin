@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=<% settings.charset %>" />
-<title>WebApp</title>
+<title>Unix Course - Admin</title>
 <link rel="stylesheet" href="<% request.uri_base %>/css/style.css" />
 
 <!-- Grab Google CDN's jQuery. fall back to local if necessary -->
@@ -14,15 +14,28 @@
 
 </head>
 <body>
-<div style="position: absolute;top: 0;left: 2em;width:10em;">
+<div id="sidebar">
+<ul>
 <li><a href="/process">Processes Management</a></li>
 <li><a href="/users">User Managment</a></li>
 <li><a href="/files">File Managment</a></li>
 <li><a href="/statistics">Statistics</a></li>
+</ul>
 </div>
-<div style="margin:12em;"><% content %></div>
+<div id="content">
+     <% IF not session.logged_in %><div align="center">
+       <a href="<% login_url %>">log in</a></div>
+     <% END %>
+  <% IF msg %>
+    <div class=flash> <% msg %> </div>
+  <% END %>
+	<% content %>
+</div>
 
 <div id="footer">
+<% IF session.logged_in %>
+<a href="<% logout_url %>">log out</a><br />
+<% END %>
 Powered by <a href="http://perldancer.org/">Dancer</a> <% dancer_version %>
 </div>
 </body>

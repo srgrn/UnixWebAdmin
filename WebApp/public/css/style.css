@@ -38,13 +38,13 @@ margin-right: auto;
 background-color: white;
 border: 3px solid #aaa;
 border-top: none;
-padding: 25px;
-width: 500px;
+padding: 15px;
+width: 80%;
 }
 
 #sidebar {
 float: right;
-width: 175px;
+width: 15%;
 }
 
 #header, #about, #getting-started {

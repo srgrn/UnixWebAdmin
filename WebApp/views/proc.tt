@@ -1,8 +1,10 @@
+<% IF session.logged_in %>
 <table>
 <% FOREACH proc IN proclist %>
 <tr> 
  <td><% proc %></td><td><a href= ../kill/<% proc %> >kill</a></td> 
 </tr>
+<% END %>
 <% END %>
 </table>
 

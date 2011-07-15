@@ -19,7 +19,8 @@ charset: "UTF-8"
 # template_toolkit: TT
 
 #template: "simple"
-
+session: "YAML"
+session_dir: "/tmp/dancer-sessions"
 template: "template_toolkit"
 # engines:
 #   template_toolkit:
