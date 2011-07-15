@@ -91,9 +91,9 @@ sub printPath($)
 		foreach my $line (<$filehandle>)
 		{
 			if($linenumber eq "all") 
-				{print ++$count;}
-			elsif($linenumber eq "non_empty" && $filehandle =~ /[a-zA-Z0-9]/)
-				{print ++$count;}
+				{print "    ",++$count,"\t";}
+			elsif($linenumber eq "non_empty" && $line =~ /[a-zA-Z0-9]/)
+				{print "    ",++$count,"\t";}
 			if($markending)
 			{
 				chomp($line);
