@@ -2,7 +2,7 @@
 <table>
 <% FOREACH pid IN proclist.keys %>
 <tr> 
- <td><% pid %> <% proclist.$pid %></td><td><a href= ../kill/<% pid %>>kill</a></td> 
+ <td><% pid %> <% proclist.$pid %></td><td><a href= ../details/<% pid %>>details</a></td> 
 </tr>
 <% END %>
 <% END %>

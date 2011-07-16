@@ -17,8 +17,8 @@ get '/' => sub {
    template 'index'; 
 };
 get '/process' => sub {
-	my %list = &ProcessHandler::proclist();
-	template 'proc' ,{'proclist' => \%list};
+	my $list = &ProcessHandler::proclist();
+	template 'proc' ,{'proclist' => $list};
 };
 
 get '/verify/:name' => sub {
@@ -33,6 +33,11 @@ get '/kill/:id' => sub {
 	my $procid = params->{id};
 	&ProcessHandler::prockill($procid);
 	return "killed Proccess";
+};
+get '/details/:id' => sub {
+	my $procid = params->{id};
+	my $specific = &ProcessHandler::getDetails($procid);
+	template 'ProcDetails' , { 'curr' => $specific };
 };
 any ['get', 'post'] => '/login' => sub {
    my $err;

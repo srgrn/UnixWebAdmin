@@ -15,15 +15,17 @@ sub proclist()
     		if($process->{'cmndline'}=~/proc/){	
 		#print "$process->{'pid'}\t[$process->{'fname'}]\n";
 		my $str= "$process->{'pid'}\t[$process->{'fname'}]";
-		$list[$process->{'pid'}]="[$process->{'fname'}]";
+		$list->{ $process->{'pid'}}="[$process->{'fname'}]";
+		#print $list->{"$process->{'pid'}"},"\n";
 		}
 		else{
 		#print "$process->{'pid'}\t$process->{'cmndline'}\n";
 		my $str="$process->{'pid'}\t$process->{'cmndline'}";
-		$list[$process->{'pid'}]="$process->{'cmndline'}"
+		$list->{ $process->{'pid'} } ="$process->{'cmndline'}"
 		}
 	}
-	return %list;
+	print $list->{'1'};
+	return $list;
 };
 
 sub fullProcDetails($){
