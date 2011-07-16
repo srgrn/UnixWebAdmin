@@ -4,7 +4,7 @@ $PT= new Proc::ProcessTable;
 
 sub proclist()
 {
-	my @list;
+	my %list;
 	my $procs= $PT->table();
 	foreach $f ($PT->fields()){
 	#print $f,"\t"	;
@@ -15,15 +15,15 @@ sub proclist()
     		if($process->{'cmndline'}=~/proc/){	
 		#print "$process->{'pid'}\t[$process->{'fname'}]\n";
 		my $str= "$process->{'pid'}\t[$process->{'fname'}]";
-		push(@list,$str);
+		$list[$process->{'pid'}]="[$process->{'fname'}]";
 		}
 		else{
 		#print "$process->{'pid'}\t$process->{'cmndline'}\n";
 		my $str="$process->{'pid'}\t$process->{'cmndline'}";
-		push(@list,$str);
+		$list[$process->{'pid'}]="$process->{'cmndline'}"
 		}
 	}
-	return @list;
+	return %list;
 };
 
 sub fullProcDetails($){
