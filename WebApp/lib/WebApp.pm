@@ -17,8 +17,8 @@ get '/' => sub {
    template 'index'; 
 };
 get '/process' => sub {
-	my @list = &ProcessHandler::proclist();
-	template 'proc' ,{'proclist' => \@list};
+	my %list = &ProcessHandler::proclist();
+	template 'proc' ,{'proclist' => \%list};
 };
 
 get '/verify/:name' => sub {

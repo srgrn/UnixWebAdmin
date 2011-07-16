@@ -1,8 +1,8 @@
 <% IF session.logged_in %>
 <table>
-<% FOREACH proc IN proclist %>
+<% FOREACH pid IN proclist.keys %>
 <tr> 
- <td><% proc %></td><td><a href= ../kill/<% proc %> >kill</a></td> 
+ <td><% pid %> <% proclist.$pid %></td><td><a href= ../kill/<% pid %>>kill</a></td> 
 </tr>
 <% END %>
 <% END %>
