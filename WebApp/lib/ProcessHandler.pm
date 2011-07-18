@@ -31,10 +31,15 @@ sub proclist()
 sub fullProcDetails($){
 
 	my $curr = $_[0];
-	my $ret = "";
-	foreach $f ($PT->fields)
-	{
-		$ret.= $curr->{$f}. "\t";
+	my $ret = 0;
+	my $procs= $PT->table();
+	foreach my $process (@$procs)
+	{	
+		if($process->{'pid'} == $curr)
+		{
+			$ret = $process;
+			last;
+		}
 	}
 	return $ret;
 };
