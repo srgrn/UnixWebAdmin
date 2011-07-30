@@ -6,10 +6,6 @@ sub proclist()
 {
 	my %list;
 	my $procs= $PT->table();
-	foreach $f ($PT->fields()){
-	#print $f,"\t"	;
-	}
-	#print "\n";
 	foreach my $process (@$procs)
 	{
     		if($process->{'cmndline'}=~/proc/){	
@@ -24,11 +20,14 @@ sub proclist()
 		$list->{ $process->{'pid'} } ="$process->{'cmndline'}"
 		}
 	}
-	print $list->{'1'};
 	return $list;
 };
-
-sub fullProcDetails($){
+#for returning to gui - not for use internally in this module
+sub get_fields()
+{
+	return $PT->fields();	
+};
+sub get_proc_by_PID($){
 
 	my $curr = $_[0];
 	my $ret = 0;
@@ -44,8 +43,11 @@ sub fullProcDetails($){
 	return $ret;
 };
 
-sub prockill($){
-	kill 15,$_[0];
+# paramaters 
+# PID to kill at $_[0]
+# kill signal or number at $_[1]
+sub prockill($$){
+	kill $_[1],$_[0];
 };
 
 
