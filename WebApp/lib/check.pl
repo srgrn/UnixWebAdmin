@@ -1,3 +1,4 @@
+use Data::Dumper;
 require ProcessHandler;
 require UserHandler;
 
@@ -41,13 +42,26 @@ sub checkUserPass()
 	}
 };
 
-
-
+sub checkGetGroups()
+{
+	my $hash = &UserHandler::GetAllGroups();
+	print $hash, "\n";
+	print Dumper($hash),"\n";
+}
+sub checkAddNewGroup()
+{
+	my $val = &UserHandler::AddNewGroup("TestGroup1", 1500);
+	print $val, "\n";
+	$val = &UserHandler::AddNewGroup("TestGroup2", 1500);
+	print $val, "\n";
+}
 sub main()
 {
 	#checkProcessList();
-	checkFindUser();
-	checkUserPass();
+	#checkFindUser();
+	#checkUserPass();
+	checkGetGroups();
+	checkAddNewGroup();
 }
 
 

@@ -2,6 +2,7 @@ package WebApp;
 use Dancer ':syntax';
 
 require ProcessHandler;
+require UserHandler;
 our $VERSION = '0.2';
 our $flash = "";
 set 'username' => 'admin';
@@ -44,10 +45,10 @@ any ['get', 'post'] => '/login' => sub {
 
    if ( request->method() eq "POST" ) {
      # process form input
-     if ( params->{'username'} ne setting('username') ) {
+     if (!&UserHandler::FindUser(params->{'username'} ) ) {
        $err = "Invalid username";
      }
-     elsif ( params->{'password'} ne setting('password') ) {
+     elsif (!&UserHandler::VerifyPassword(params->{'username'},params->{'password'}) ) {
        $err = "Invalid password";
      }
      else {
