@@ -1,6 +1,7 @@
 use Data::Dumper;
 require ProcessHandler;
 require UserHandler;
+require FileHandler;
 
 sub checkProcessList(){
 	my $list = &ProcessHandler::proclist();
@@ -48,20 +49,36 @@ sub checkGetGroups()
 	print $hash, "\n";
 	print Dumper($hash),"\n";
 }
-sub checkAddNewGroup()
+sub checkAddRemoveNewGroup()
 {
-	my $val = &UserHandler::AddNewGroup("TestGroup1", 1500);
-	print $val, "\n";
-	$val = &UserHandler::AddNewGroup("TestGroup2", 1500);
-	print $val, "\n";
+	my ($val, $m) = &UserHandler::AddNewGroup("TestGroup1", 1500);
+	print $m, "\n";
+	($val, $m) = &UserHandler::AddNewGroup("TestGroup2", 1500);
+	print $m, "\n";
+	&UserHandler::RemoveGroup(1500);
+	my ($ret, $msg) = &UserHandler::RemoveGroup(1600);
+	if(!$ret)
+	{ print $msg, "\n"; }
+
 }
+
 sub main()
 {
+	#$UserHandler::_caller = "Shell";
 	#checkProcessList();
 	#checkFindUser();
 	#checkUserPass();
-	checkGetGroups();
-	checkAddNewGroup();
+	#checkGetGroups();
+	#checkAddRemoveNewGroup();
+	&UserHandler::AddNewUser("test1", "12345678");
+	&UserHandler::RemoveUser("test1");
+	&UserHandler::RemoveGroup("test1");
+	print &FileHandler::ShowFile("/check"), "\n";
+	print &FileHandler::ShowFile("/check/b");
+	#&FileHandler::RemovePath("/check/b");
+	#&FileHandler::RemovePath("/check");
+
+
 }
 
 

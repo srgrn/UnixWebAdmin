@@ -1,7 +1,7 @@
 package UserHandler;
 
 use File::Copy;
-
+$_caller = "Web";
 my $passwdFile="/etc/passwd";
 my $shadowFile="/etc/shadow";
 my $groupFile="/etc/group";
@@ -46,14 +46,18 @@ sub initiated()
 		if(init())
 		{
 			print "An error Occured: $err\n";
-			exit(0);
+			if ($_caller eq "Shell")
+			{ exit(0); }
+			return(0);
 		}	
 	}
+	return 1;
 
-}
+};
 # $1 = username to find
-# returns the user string from the passwd file
+# returns the user string from the passwd file or 0 if there is no such user
 # No root required
+# Apperantly this entire function can be replaced with getpwnam(name))
 sub FindUser($)
 {
 	my $username = $_[0];
@@ -66,8 +70,107 @@ sub FindUser($)
 	}
 	return 0;
 };
+# $1 username
+# $2 password (due to my lazuness of encrypting in JS it will be encrypted on the server)
+# $3 user id if we want to specify it 
+# this function will create a new user and as a must will create a new homedir for him.
+# it will also set his main group to a new group with his username if such doesn't exist yet
+sub AddNewUser($$)
+{
+	my ($username, $pass, $uid) = @_;
+	my $gid = 0;
+	initiated();
+	if(FindUser($username))
+	{ return 0, "$username already exist"; }
+	# i will do the simple thing and look for the greatest uid  in the passwd file than +1 it
+	my @uids = "";
+	foreach my $line (@passwd)
+	{
+		my @temp = split(/:/, $line);
+		push(@uids, $temp[2]);
+	}
+	@uids = sort {$a <=> $b} @uids;
+	if(!$uid)
+	{
+		$uid = $uids[$#uids];
+		++$uid; # now the uid has the largets number  +1
+	}
+	else
+	{
+		if (any { $_ == $uid} @uids)
+		{ return 0, "$uid is already in use";}
+	}
+	my ($rval, $err) = AddNewGroup($username, $uid);
+	$gid = $uid;
+	if(!$rval && $err =~/name/)
+	{ return 0, "can't create group for user";}
+	elsif(!$rval && $err =~/id/)
+	{
+		my @gids = "";
+		foreach my $line (@group)
+		{
+			my @temp = split(/:/, $line);
+			push(@gids, $temp[2]);
+		}
+		@gids = sort {$a <=> $b} @gids;
+		$gid = $gids[$#gids];
+		$gid++;
+		if(!AddNewGroup($username,$gid))
+		{ return 0, "can't create group for user";}
+	}
+	$userline = "$username:x:$uid:$gid:\:/home/$username:/bin/bash";
+	push(@passwd, $userline);
+	WriteConfFile($passwdFile, @passwd);
+	init();
+	my $shadowline = "$username:". crypt($pass,(getpwuid(0))[1] ) . ":15071:0:99999:7:::";
+	push(@shadow, $shadowline);
+	WriteConfFile($shadowFile, @shadow);
+	init();
+	mkdir("/home/$username");
+};
+# $1 = Username 
+# remove the requested user from the passwd and shaow files
+sub RemoveUser($)
+{
+	my $username = $_[0];
+	initiated();
+	my $userline = FindUser($username);
+	if($userline)
+	{
+		my $change =0;
+		for (my $i=0;$i<=$#passwd;$i++) #using for since i want the number of the line
+		{
+			if($userline eq $passwd[$i])
+			{
+				splice(@passwd, $i);
+				$change++;
+				break;
+			}
+		}
+		for (my $i=0;$i<=$#shadow;$i++)
+		{
+			if($shadow[$i] =~ /$username:/)
+			{
+				splice(@shadow, $i);
+				$change++;
+				break;
+		
+			}
+		}
+		if($change == 2 )
+		{ 
+			WriteConfFile($passwdFile, @passwd);
+			WriteConfFile($shadowFile, @shadow);
+			init();
+			return 1, "Deleted user";
+		}
+	}
+	return 0, "no Such user";
+
+};
 # $1 = username
 # $2 = password string
+# returns 1 if the password is correct  0 if not
 sub VerifyPassword($$)
 {
 	my ($username,$pass) = @_;
@@ -75,7 +178,7 @@ sub VerifyPassword($$)
 	my $userline = FindUser($username);
 	my @temp = split(/:/,$userline);
 	my $uid = $temp[2];
-	my $pwd = (getpwuid(1000))[1];
+	my $pwd = (getpwuid($uid))[1];
 	my $cryptpwd;
 	foreach my $line (@shadow)
 	{
@@ -89,7 +192,7 @@ sub VerifyPassword($$)
 	if($cryptopwd eq  crypt($pass, $pwd))
 	{ return 1;}
 	return 0;
-}
+};
 # return a hash for all groups in the system where the hash is keyd to group name
 # and contains internal hash with id and memebers
 sub GetAllGroups()
@@ -103,40 +206,117 @@ sub GetAllGroups()
 		$groupHash{$temp[0]}={'id'=>$temp[2], 'members'=>$temp[3]};
 	}
 	return \%groupHash;
-}
+};
 # $1 = $groupname for group
 # $2 = $groupid for group
-# will add new group update the file and reinit the code
+# will add new group update the file and reinit the arrays
 sub AddNewGroup($$)
 {
 	my ($groupname, $groupid) = @_;
+	initiated();
 	my $groupHash = GetAllGroups();
 	foreach my $gname (keys %{$groupHash})
 	{
 		if($gname eq $groupname)
-		{ return "Group name already exist";}
+		{ return 0, "Group name already exist";}
 		if($groupHash->{$gname}->{'id'}== $groupid)
-		{ return "Group ID already in use by $gname";}
+		{ return 0, "Group ID already in use by $gname";}
 
 	}
-	my $newgroup = "$groupname:x:$groupid:\n";
+	my $newgroup = "$groupname:x:$groupid:";
 	push(@group, $newgroup);
 	WriteConfFile($groupFile, @group);
+	init();
+	return 1;
 	
-}
+};
+# $1 = group name or gid
+# this will remove the group from the group filo
+sub RemoveGroup($)
+{
+	my $group = $_[0];
+	initiated();
+	my $gid=0;
+	if($group =~ /^\d+$/)
+	{ 
+		$gid = $group;
+		$group = "";
+	}
+	my $change =0;
+	for (my $i=0;$i<=$#group;$i++) #using for since i want the number of the line
+	{
+		my @temp = split(/:/, $group[$i]);
+		if($gid)
+		{
+			if($temp[2] == $gid)
+			{
+				splice(@group, $i);
+				$change=1;
+				break;
+			}
+		}
+		elsif($temp[0] eq $group)
+		{
+			splice(@group, $i);
+			$change =1;
+			break;
+		}
+	}
+	if($change)
+	{ 
+		WriteConfFile($groupFile, @group);
+		init();
+		return 1, "Deleted group";
+	}
+	return 0, "no Such group";
+};
+# $1 = username
+# $2 = groupname
+# returns 1 for success 
+sub addUserToGroup($$)
+{
+	my ($username, $groupname) = @_;
+	initiated();
+	my $change =0;
+	for (my $i=0;$i<=$#group;$i++) #using for since i want the number of the line
+	{
+		my @temp = split(/:/, $group[$i]);
+		if($temp[0] eq $groupname)
+		{ 
+			$group[$i] .= ",$username";
+			$change =1;
+		}
+	}
+	if($change)
+	{ 
+		WriteConfFile($groupFile, @group);
+		init();
+		return 1, "added $username to $groupname";
+	}
+	return 0, "no Such group";
+};
+
 # $1 = $pathtofile 
 # $2 = $array to write
 # will move and than print out configuration file
-# this functions has no write or open verifications for now as i am tired
+# return 0 and message for error 1 for success
 sub WriteConfFile($$)
 {
 	my ($path, @arr) = @_;
 	if(-e "$path.old")
 	{ unlink("$path.old");}
-	copy("$path", "$path.old");
-	open(FILE, ">$path");
-	print FILE @arr;
+	if(!copy("$path", "$path.old"))
+	{ return 0, "Failed to copy backup file";}
+	if(!open(FILE, ">$path"))
+	{ return 0, "Failed to open $path";}
+	foreach $line (@arr)
+	{
+		chomp($line);
+		print FILE "$line\n";
+	}
 	close FILE;
-}
+	return 1;
+};
+
 1;
 
