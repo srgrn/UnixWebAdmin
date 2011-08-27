@@ -144,7 +144,7 @@ sub RemoveUser($)
 			{
 				splice(@passwd, $i);
 				$change++;
-				break;
+				last;
 			}
 		}
 		for (my $i=0;$i<=$#shadow;$i++)
@@ -153,7 +153,7 @@ sub RemoveUser($)
 			{
 				splice(@shadow, $i);
 				$change++;
-				break;
+				last;
 		
 			}
 		}
@@ -186,7 +186,7 @@ sub VerifyPassword($$)
 		{ 
 			@temp = split(/:/, $line);
 			$cryptopwd = $temp[1];
-			break();
+			last;
 		}
 	}
 	if($cryptopwd eq  crypt($pass, $pwd))
@@ -252,14 +252,14 @@ sub RemoveGroup($)
 			{
 				splice(@group, $i);
 				$change=1;
-				break;
+				last;
 			}
 		}
 		elsif($temp[0] eq $group)
 		{
 			splice(@group, $i);
 			$change =1;
-			break;
+			last;
 		}
 	}
 	if($change)
