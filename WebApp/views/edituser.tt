@@ -1,0 +1,14 @@
+<% IF session.logged_in %>
+<form action="../edituser/<% details.username %>" method="post">
+<% FOREACH val IN details.keys %>
+<% val %>:<% details.$val %><br/>
+<% END %>
+Groups: (check the groups you want to remove than click OK) 
+<% FOREACH group IN groups %>
+<input type="checkbox" id="<% group %>" name="<% group %>"><% group %>
+<% END %><br/>
+Add to Group:<input type="textbox" id="newgroup" name="newgroup">
+<br/><br/>
+<input type="submit" name="submit" value="OK">
+</form>
+<% END %>

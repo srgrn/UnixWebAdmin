@@ -1,10 +1,21 @@
 <% IF session.logged_in %>
-<table>
-<% FOREACH pid IN proclist.keys %>
+<table class="sort01 table-autosort:2 table-autofilter">
+	<thead>
+		<tr>
+			<th class="table-filterable table-sortable:numeric">Process ID</th>
+			<th class="table-sortable:default">Command</th>
+		</tr>
+	</thead>
+	<tbody>
+<% FOREACH pid IN proclist.keys.nsort %>
 <tr> 
- <td><% pid %> <% proclist.$pid %></td><td><a href= ../details/<% pid %>>details</a></td> 
+	<td><% pid %></td>
+	<td><% proclist.$pid %></td>
+	<td><a href= ../details/<% pid %>>details</a></td>
+	<td><a href=../kill/<% pid %>>kill</a></td>
 </tr>
 <% END %>
 <% END %>
+</tbody>
 </table>
 

@@ -14,7 +14,9 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'YAML'       => 0,
+		'IO::Interface::Simple' => 0, 
         'Dancer'     => 1.3060,
+		'Modern::Perl' => 0, 
 	'Plack'	     => 0,
 	'Proc'       => 0
     },

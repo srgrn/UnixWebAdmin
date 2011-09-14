@@ -1,0 +1,6 @@
+<% IF session.logged_in %>
+<a href="../adduser"><input type="button" name="Add" value="Add User"></a><br/><br/>
+<% FOREACH u IN list %>
+<% u %>: <a href="../edituser/<% u %>">Edit</a>  <a href="../deleteUser/<% u %>">Delete</a><br/>
+<% END %>
+<% END %>

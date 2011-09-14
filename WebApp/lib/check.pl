@@ -1,7 +1,9 @@
 use Data::Dumper;
+use feature 'say';
 require ProcessHandler;
 require UserHandler;
 require FileHandler;
+require SystemHandler;
 
 sub checkProcessList(){
 	my $list = &ProcessHandler::proclist();
@@ -64,21 +66,23 @@ sub checkAddRemoveNewGroup()
 
 sub main()
 {
-	#$UserHandler::_caller = "Shell";
+	#UserHandler::_caller = "Shell";
 	#checkProcessList();
 	#checkFindUser();
 	#checkUserPass();
 	#checkGetGroups();
 	#checkAddRemoveNewGroup();
-	&UserHandler::AddNewUser("test1", "12345678");
-	&UserHandler::RemoveUser("test1");
-	&UserHandler::RemoveGroup("test1");
-	print &FileHandler::ShowFile("/check"), "\n";
-	print &FileHandler::ShowFile("/check/b");
+	#&UserHandler::AddNewUser("test1", "12345678");
+	#&UserHandler::RemoveUser("test1");
+	#&UserHandler::RemoveGroup("test1");
+	#print &FileHandler::ShowFile("/check"), "\n";
+	#print &FileHandler::ShowFile("/check/b");
 	#&FileHandler::RemovePath("/check/b");
 	#&FileHandler::RemovePath("/check");
-
-
+	#my $user = "zimbler";
+	my $ref = &SystemHandler::GetNetDetails();
+	say Dumper($ref);
+	#print &SystemHandler::uptime(), "\n", &SystemHandler::loadavarage(), "\n";
 }
 
 

@@ -1,0 +1,15 @@
+<% IF session.logged_in %>
+<form action="/priority"  method="post">
+<% FOREACH f IN fields %>
+<ul><% f %>: <% curr.$f %>
+<% IF f == 'priority' %>
+<input type="hidden" name="pid" id="pid" value=<% curr.pid %> >
+<input type="text" name="pri" id="pri">
+<input type="submit" value="Update" />
+<% ELSE %>
+<% END %>
+</ul>
+<% END %>
+</form>
+<% END %>
+

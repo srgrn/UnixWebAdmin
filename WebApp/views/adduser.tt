@@ -1,0 +1,10 @@
+<% IF session.logged_in %>
+<form action="../adduser" method="post">
+	Username:	<input type="textbox" name="username" />	
+	Password: <input type="password" name="password"/><br/>
+  UID (not mandatory): <input type="textbox" name="uid"/><br/>
+	
+	<input type="submit" name="submit" value="Create">
+</form>
+<% END %>
+

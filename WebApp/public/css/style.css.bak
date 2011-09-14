@@ -38,18 +38,13 @@ margin-right: auto;
 background-color: white;
 border: 3px solid #aaa;
 border-top: none;
-padding: 15px;
-width: 80%;
+padding: 25px;
+width: 500px;
 }
 
 #sidebar {
-/*float: right;
-width: 15%;*/
-position:absolute;  
-top:20px;  
-margin-left:5px;  
-left:85%;
-width:15%;  
+float: right;
+width: 175px;
 }
 
 #header, #about, #getting-started {
@@ -58,6 +53,12 @@ padding-right: 30px;
 }
 
 
+#header {
+background-image: url("/images/perldancer.jpg");
+background-repeat: no-repeat;
+background-position: top left;
+height: 64px;
+}
 #header h1, #header h2 {margin: 0}
 #header h2 {
 color: #888;
@@ -185,21 +186,4 @@ text-align: center;
 padding-right: 160px;
 font-family: sans-serif;
 font-size: 10px;
-}
-th.table-sortable {
-cursor:pointer;
-background-image:url("/images/asc.gif");
-background-position:center left;
-background-repeat:no-repeat;
-padding-left:12px;
-}
-th.table-sorted-asc {
-background-image:url("/images/asc.gif");
-background-position:center left;
-background-repeat:no-repeat;
-}
-th.table-sorted-desc {
-background-image:url("/images/desc.gif");
-background-position:center left;
-background-repeat:no-repeat;
 }

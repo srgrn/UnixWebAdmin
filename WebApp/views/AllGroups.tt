@@ -1,0 +1,14 @@
+<% IF session.logged_in %>
+<a href="../addgroup"><input type="button" name="Add" value="Add Group"></a><br/><br/>
+<table>
+	<tr><th>Name</th><th>ID</th><th>Members</th><th></th></tr>
+<% FOREACH g IN list.keys %>
+<tr>
+	<td><% g %></td> 
+	<td><% list.$g.id %></td> 
+	<td><% list.$g.members %></td>
+	<td><a href="../deleteiGroup/<% g %>">Delete</a></td>
+</tr>
+<% END %>
+</table>
+<% END %>

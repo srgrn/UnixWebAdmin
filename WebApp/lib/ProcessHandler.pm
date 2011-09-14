@@ -1,10 +1,12 @@
 package ProcessHandler;
+
+use Modern::Perl;
 use Proc::ProcessTable; 
-$PT= new Proc::ProcessTable;
-$_caller = "Web";
+my $PT= new Proc::ProcessTable;
+our $_caller = "Web";
 sub proclist()
 {
-	my %list;
+	my $list;
 	my $procs= $PT->table();
 	foreach my $process (@$procs)
 	{
@@ -25,7 +27,8 @@ sub proclist()
 #for returning to gui - not for use internally in this module
 sub get_fields()
 {
-	return $PT->fields();	
+	my @arr =  $PT->fields();	
+	return @arr;
 };
 sub get_proc_by_name($){
 
@@ -66,10 +69,16 @@ sub getDetails($){
 sub SetPriority($$){
 	my ($pid,$priority) = @_;
 	my $proc = get_proc_by_PID($pid);
+	if($priority>40 || $priority <0)
+	{return 0;	}
+	$priority -=20;
 	if($proc)
 	{
-		$proc->priority($priority);
+		setpriority(0, $pid, $priority);
 		return 1;
+		#my $pri = $proc->priority($priority);
+		#if($pri == $priority)
+		#{	return $pri;}
 	}
 	return 0;
 }

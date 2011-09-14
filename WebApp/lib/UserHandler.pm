@@ -1,7 +1,8 @@
 package UserHandler;
 
+use Modern::Perl;
 use File::Copy;
-$_caller = "Web";
+our $_caller = "Web";
 my $passwdFile="/etc/passwd";
 my $shadowFile="/etc/shadow";
 my $groupFile="/etc/group";
@@ -70,6 +71,33 @@ sub FindUser($)
 	}
 	return 0;
 };
+sub userDetails($)
+{
+	my %details;
+	$details{"username"}= $_[0];
+	my $userline = FindUser($details{"username"});
+	if($userline)
+	{
+		my @temp = split(/:/, $userline);
+		$details{"UID"}=$temp[2];
+		$details{"GID"}=$temp[3];
+		$details{"homedir"}=$temp[5];
+		$details{"shell"}=$temp[6];
+		return \%details;
+	}
+	return 0;
+}
+sub getAllUsers()
+{
+	my @list;
+	initiated();
+	foreach my $line (@passwd)
+	{
+		my @curr = split(/:/, $line);
+		push(@list, $curr[0]);
+	}
+	return @list;
+};
 # $1 username
 # $2 password (due to my lazuness of encrypting in JS it will be encrypted on the server)
 # $3 user id if we want to specify it 
@@ -83,7 +111,7 @@ sub AddNewUser($$)
 	if(FindUser($username))
 	{ return 0, "$username already exist"; }
 	# i will do the simple thing and look for the greatest uid  in the passwd file than +1 it
-	my @uids = "";
+	my @uids;
 	foreach my $line (@passwd)
 	{
 		my @temp = split(/:/, $line);
@@ -118,7 +146,7 @@ sub AddNewUser($$)
 		if(!AddNewGroup($username,$gid))
 		{ return 0, "can't create group for user";}
 	}
-	$userline = "$username:x:$uid:$gid:\:/home/$username:/bin/bash";
+	my $userline = "$username:x:$uid:$gid:\:/home/$username:/bin/bash";
 	push(@passwd, $userline);
 	WriteConfFile($passwdFile, @passwd);
 	init();
@@ -127,6 +155,7 @@ sub AddNewUser($$)
 	WriteConfFile($shadowFile, @shadow);
 	init();
 	mkdir("/home/$username");
+	return 1, "Create user $username";
 };
 # $1 = Username 
 # remove the requested user from the passwd and shaow files
@@ -161,6 +190,7 @@ sub RemoveUser($)
 		{ 
 			WriteConfFile($passwdFile, @passwd);
 			WriteConfFile($shadowFile, @shadow);
+			RemoveGroup($username);
 			init();
 			return 1, "Deleted user";
 		}
@@ -179,7 +209,7 @@ sub VerifyPassword($$)
 	my @temp = split(/:/,$userline);
 	my $uid = $temp[2];
 	my $pwd = (getpwuid($uid))[1];
-	my $cryptpwd;
+	my $cryptopwd;
 	foreach my $line (@shadow)
 	{
 		if($line=~/$username/)
@@ -192,6 +222,22 @@ sub VerifyPassword($$)
 	if($cryptopwd eq  crypt($pass, $pwd))
 	{ return 1;}
 	return 0;
+};
+sub getUserGroups($)
+{
+	my $username = $_[0];
+	initiated();
+	my @usergroups;
+	foreach my $line (@group)
+	{
+		chomp($line);
+		my @temp = split(/:/, $line);
+		if($temp[3] && $temp[3] =~ /$username/)
+		{
+			push(@usergroups, $temp[0]);
+		}
+	}
+	return @usergroups;
 };
 # return a hash for all groups in the system where the hash is keyd to group name
 # and contains internal hash with id and memebers
@@ -283,7 +329,8 @@ sub addUserToGroup($$)
 		my @temp = split(/:/, $group[$i]);
 		if($temp[0] eq $groupname)
 		{ 
-			$group[$i] .= ",$username";
+			chomp($group[$i]);
+			$group[$i] .= ",$username\n";
 			$change =1;
 		}
 	}
@@ -292,6 +339,30 @@ sub addUserToGroup($$)
 		WriteConfFile($groupFile, @group);
 		init();
 		return 1, "added $username to $groupname";
+	}
+	return 0, "no Such group";
+};
+sub removeUserFromGroup($$)
+{
+	my ($username, $groupname) = @_;
+	initiated();
+	my $change =0;
+	for (my $i=0;$i<=$#group;$i++) #using for since i want the number of the line
+	{
+		my @temp = split(/:/, $group[$i]);
+		if($temp[0] eq $groupname)
+		{ 
+			$group[$i] =~ s/$username//;
+			$group[$i] =~ s/,,/,/;
+			$group[$i] =~ s/,$//; # should be all in one regex but it would ve a complicated one
+			$change =1;
+		}
+	}
+	if($change)
+	{ 
+		WriteConfFile($groupFile, @group);
+		init();
+		return 1, "removed $username from $groupname";
 	}
 	return 0, "no Such group";
 };
@@ -309,7 +380,7 @@ sub WriteConfFile($$)
 	{ return 0, "Failed to copy backup file";}
 	if(!open(FILE, ">$path"))
 	{ return 0, "Failed to open $path";}
-	foreach $line (@arr)
+	foreach my $line (@arr)
 	{
 		chomp($line);
 		print FILE "$line\n";

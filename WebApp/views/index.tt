@@ -1,1 +1,26 @@
+<% IF session.logged_in %>
+<div class="collapsibleContainer" title="CPU Details">
+<% FOREACH line IN cpu %>
+<div><% line %></div>
+<% END %>
+</div>
+<div class="collapsibleContainer" title="Memory Details">
+<% FOREACH line IN memory %>
+<div><% line %></div>
+<% END %>
+</div>
+<div class="collapsibleContainer" title="Network Details">
+<% FOREACH key IN net.keys %>
+<div><% key %> : <% net.$key %></div>
+<% END %>
+</div>
+<div class="collapsibleContainer" title="Other">
+<% FOREACH newkey IN other.keys %>
+<div><% newkey %> : <% other.$newkey %></div>
+<% END %>
+</div>
+
+
+<% END %>
+
 

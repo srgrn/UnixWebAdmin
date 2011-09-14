@@ -1,13 +1,14 @@
 package FileHandler;
 
-$_caller = "Web";
+use Modern::Perl;
+our $_caller = "Web";
 
 # $1 = path to open
 # if the path points to a file it will return the contents if its a dir it will return the files
 # in it
 sub ShowFile($)
 {
-	$path = $_[0];
+	my $path = $_[0];
 	if(!-e $path)
 	{ return 0, "Path does not exist";}
 	if(-f $path && -T $path)
@@ -74,6 +75,7 @@ sub RemovePath($)
 	}
 	return 1;
 };
+
 # $1 array ref of file list
 # $2 search term
 # $3 eqievalant to -v in grep
