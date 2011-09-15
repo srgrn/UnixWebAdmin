@@ -1,0 +1,14 @@
+A simple dancer WebApp to manage a unix server
+allows managing users, groups, simple proccess managment, and simple file system operations
+all this is currently being done without any system commands and using perl only
+so it should be pretty easier to move between unix/linux distros
+
+this is created for my unix course project in Afeka College
+there are still rough edges and future improvments if i will get the them might include:
+	changing the codebase to OOP (with Moose)
+	adding better error handling
+	making the templates looking better
+	using ajax instead of loading the pages again and again
+	etc
+
+
