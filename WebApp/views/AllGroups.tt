@@ -7,7 +7,7 @@
 	<td><% g %></td> 
 	<td><% list.$g.id %></td> 
 	<td><% list.$g.members %></td>
-	<td><a href="../deleteiGroup/<% g %>">Delete</a></td>
+	<td><a href="../deleteGroup/<% g %>">Delete</a></td>
 </tr>
 <% END %>
 </table>

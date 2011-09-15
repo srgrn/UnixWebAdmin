@@ -104,6 +104,31 @@ post '/adduser' => sub {
 		redirect "/edituser/$username";
 	}
 };
+get '/addgroup' => sub {
+	template 'addgroup', 
+	{
+		'title' => "Create New Group", 
+		'infotext' => "Create new group in the system"
+	};
+};
+post '/addgroup' => sub {
+	my $name = params->{name};
+	my $gid = params->{gid};
+	my ($ret, $infotext) = &UserHandler::AddNewGroup($name, $gid);
+	if(!$ret)
+	{
+		template 'addgroup', 
+		{
+			'title' => "Group creation failed", 
+			'infotext' => $infotext
+		};
+	}
+	else
+	{
+		redirect "/groups";
+	}
+};
+
 get '/edituser/:user' => sub {
 	my $user = params->{user};
 	my $details= &UserHandler::userDetails($user);
@@ -162,6 +187,20 @@ get '/deleteUser/:username' => sub {
 		'infotext' => $infotext
 	};
 };
+get '/deleteGroup/:group' => sub {
+	my $group = param 'group';
+	my ($output, $infotext) = &UserHandler::RemoveGroup($group);
+	if(!$output)
+	{ $infotext = "Failed to delete group or no such group";}
+	my $groupsref = &UserHandler::GetAllGroups();
+	template 'AllGroups', 
+	{
+		'list' => $groupsref, 
+		'title' => "All Groups", 
+		'infotext' => $infotext
+	};
+};
+
 any ['get', 'post' ] => '/priority' => sub {
 	my $pid = params->{pid};
 	my $pri = params->{pri};

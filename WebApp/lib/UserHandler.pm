@@ -134,16 +134,7 @@ sub AddNewUser($$)
 	{ return 0, "can't create group for user";}
 	elsif(!$rval && $err =~/id/)
 	{
-		my @gids = "";
-		foreach my $line (@group)
-		{
-			my @temp = split(/:/, $line);
-			push(@gids, $temp[2]);
-		}
-		@gids = sort {$a <=> $b} @gids;
-		$gid = $gids[$#gids];
-		$gid++;
-		if(!AddNewGroup($username,$gid))
+		if(!AddNewGroup($username, ""))
 		{ return 0, "can't create group for user";}
 	}
 	my $userline = "$username:x:$uid:$gid:\:/home/$username:/bin/bash";
@@ -232,7 +223,7 @@ sub getUserGroups($)
 	{
 		chomp($line);
 		my @temp = split(/:/, $line);
-		if($temp[3] && $temp[3] =~ /$username/)
+		if($temp[3] && $temp[3] =~ /$username(,|$)/)
 		{
 			push(@usergroups, $temp[0]);
 		}
@@ -259,13 +250,25 @@ sub GetAllGroups()
 sub AddNewGroup($$)
 {
 	my ($groupname, $groupid) = @_;
+	if(!$groupid)
+	{
+		my @gids;
+		foreach my $line (@group)
+		{
+			my @temp = split(/:/, $line);
+			push(@gids, $temp[2]);
+		}
+		@gids = sort {$a <=> $b} @gids;
+		$groupid = $gids[$#gids];
+		$groupid++;
+	}
 	initiated();
 	my $groupHash = GetAllGroups();
 	foreach my $gname (keys %{$groupHash})
 	{
 		if($gname eq $groupname)
 		{ return 0, "Group name already exist";}
-		if($groupHash->{$gname}->{'id'}== $groupid)
+		if($groupid == $groupHash->{$gname}->{'id'})
 		{ return 0, "Group ID already in use by $gname";}
 
 	}
@@ -352,9 +355,8 @@ sub removeUserFromGroup($$)
 		my @temp = split(/:/, $group[$i]);
 		if($temp[0] eq $groupname)
 		{ 
-			$group[$i] =~ s/$username//;
-			$group[$i] =~ s/,,/,/;
-			$group[$i] =~ s/,$//; # should be all in one regex but it would ve a complicated one
+			$group[$i] =~ s/$username(,|$)//;
+			$group[$i] =~ s/,,+//;
 			$change =1;
 		}
 	}

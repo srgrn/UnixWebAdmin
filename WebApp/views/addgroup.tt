@@ -1,0 +1,9 @@
+<% IF session.logged_in %>
+<form action="../addgroup" method="post">
+	Username:	<input type="textbox" name="name" /><br/>
+  GID (not mandatory): <input type="textbox" name="gid"/><br/>
+	
+	<input type="submit" name="submit" value="Create">
+</form>
+<% END %>
+
