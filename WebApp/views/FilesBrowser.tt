@@ -1,0 +1,9 @@
+<% IF session.logged_in %>
+<% FOREACH file IN list.keys %>
+<% IF list.$file.dir == '1' %>
+<a href="/files<% list.$file.fullpath %>"><% list.$file.name %></a><br/>
+<% ELSE %>
+<a href="/singlefile<% list.$file.fullpath %>"><% list.$file.name %></a><br/>
+<% END %>
+<% END %>
+<% END %>

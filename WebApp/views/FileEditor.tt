@@ -1,0 +1,7 @@
+<% IF session.logged_in %>
+<form action="../singlefile/<% location %>" method='post'>
+	<textarea name="contents" rows="20" cols="80">
+<% contents.join() %>
+	</textarea>
+</form>
+<% END %>
