@@ -1,7 +1,11 @@
 <% IF session.logged_in %>
-<form action="../singlefile/<% location %>" method='post'>
-	<textarea name="contents" rows="20" cols="80">
-<% contents.join() %>
+<form action="/files/singlefile/<% location %>" method='post'>
+	<a href="/files/show/<% location %>/..">Back to Directory</a><br/>
+	<input type="submit" name="submit" value="Update"/>
+		<textarea name="contents" rows="20" cols="80">
+<% contents.join('') %>
 	</textarea>
-</form>
+	<input type="submit" name="submit" value="Update"/><br/>
+	<a href="/files/show/<% location %>/..">Back to Directory</a><br/>
+	</form>
 <% END %>

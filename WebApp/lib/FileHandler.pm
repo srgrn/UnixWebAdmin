@@ -9,6 +9,8 @@ our $_caller = "Web";
 sub ShowFile($)
 {
 	my $path = $_[0];
+	$path =~ s/^/\//;
+	$path =~ s/\*hidden\*_//;
 	if(!-e $path)
 	{ return 0, "Path does not exist";}
 	if(-f $path && -T $path)
@@ -42,13 +44,43 @@ sub ShowFile($)
 	}
 
 };
+sub ShowDir($)
+{
+	my $path = $_[0];
+	$path =~ s/^/\//;
+	$path =~ s/\*hidden\*_//;
+	if(!-e $path)
+	{ return 0, "Path does not exist";}
+	if(!opendir(DIR, $path))
+		{
+			if($_caller eq "Web")
+			{ return 0, "Cannot Open file";}
+			else
+			{ die("Cannot open file");}
+		}
+		my %files; 
+		while(readdir DIR) {
+			my $file = $_;
+			my $isdir=0;
+			if(-d "$path/$file")
+			{$isdir = 1;}
+			if($file eq ".." || $file eq ".")
+			{ next;}
+			$file =~ s/^\./*hidden*_./;
+			$files{$file} = {'name' => "$file" , 'fullpath' => "$path/$file", 'dir'=> $isdir};
+		}
+		closedir DIR;
+		return \%files;
 
+};
 # $1 = path 
 # if a path is a file it removes the file otherwise 
 # it removes the directory (recusrivly like rm -f)
 sub RemovePath($)
 {
 	my $path = $_[0];
+	$path =~ s/^/\//;
+	$path =~ s/\*hidden\*_//;		
 	if(-d $path)
 	{
 		opendir(DIR, $path);
@@ -83,6 +115,21 @@ sub grepFiles($$$)
 {
 	my($files, $term, $vflag) = @_;
 
-}
+};
+sub replaceInFiles($$$)
+{
+	my ($searchValue, $replaceValue, $files) = @_;
+};
+sub UpdateFile($$)
+{
+	my ($path, $contents) = @_;
+	if(!-f $path)
+	{ return 0, "File Not Found";}
+	if(!open(FILE, ">", $path))
+	{ return 0, "cannot open File $path";}
+	print FILE $contents;
+	close FILE;
+	return 1;
 
+};
 1;

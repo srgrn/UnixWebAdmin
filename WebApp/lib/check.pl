@@ -66,23 +66,8 @@ sub checkAddRemoveNewGroup()
 
 sub main()
 {
-	#UserHandler::_caller = "Shell";
-	#checkProcessList();
-	#checkFindUser();
-	#checkUserPass();
-	#checkGetGroups();
-	#checkAddRemoveNewGroup();
-	#&UserHandler::AddNewUser("test1", "12345678");
-	#&UserHandler::RemoveUser("test1");
-	#&UserHandler::RemoveGroup("test1");
-	#print &FileHandler::ShowFile("/check"), "\n";
-	#print &FileHandler::ShowFile("/check/b");
-	#&FileHandler::RemovePath("/check/b");
-	#&FileHandler::RemovePath("/check");
-	#my $user = "zimbler";
-	my $ref = &SystemHandler::GetNetDetails();
+	my $ref = &FileHandler::ShowDir("/proc");
 	say Dumper($ref);
-	#print &SystemHandler::uptime(), "\n", &SystemHandler::loadavarage(), "\n";
 }
 
 

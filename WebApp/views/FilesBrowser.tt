@@ -1,9 +1,18 @@
 <% IF session.logged_in %>
+<a href="/files/addfile/<% location %>"><input type="button" value="Add File"></a><br/>
+<table>
+	<tr>
+		<td colspan="2"><a href="/files/show/<% location %>/..">..</a></td>
+	</tr>
 <% FOREACH file IN list.keys %>
+<tr>
 <% IF list.$file.dir == '1' %>
-<a href="/files<% list.$file.fullpath %>"><% list.$file.name %></a><br/>
+<td><a href="/files/show/<% list.$file.fullpath %>"><% list.$file.name %></a></td>
 <% ELSE %>
-<a href="/singlefile<% list.$file.fullpath %>"><% list.$file.name %></a><br/>
+<td><a href="/files/singlefile<% list.$file.fullpath %>"><% list.$file.name %></a></td>
 <% END %>
+<td><a href="/files/deletePath<% list.$file.fullpath %>">Delete</a></td>
+</tr>
 <% END %>
+</table>
 <% END %>

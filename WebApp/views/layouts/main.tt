@@ -36,7 +36,7 @@
 <li><a href="/process">Processes Management</a></li>
 <li><a href="/users">User Managment</a></li>
 <li><a href="/groups">Groups Managment</a></li>
-<li><a href="/files">File Managment</a></li>
+<li><a href="/files/show">File Managment</a></li>
 <li><a href="/statistics">Statistics</a></li>
 </ul>
 </object>

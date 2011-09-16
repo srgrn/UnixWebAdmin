@@ -5,6 +5,7 @@ use Modern::Perl;
 require ProcessHandler;
 require UserHandler;
 require SystemHandler;
+require FileHandler;
 our $VERSION = '0.4';
 our $flash = "";
 set 'username' => 'admin';
@@ -215,8 +216,78 @@ get '/details/:id' => sub {
 	my $specific = &ProcessHandler::getDetails($procid);
 	my @fields = &ProcessHandler::get_fields();
 	template 'ProcDetails' , 
-	{ 'fields'=> \@fields, 
-	'curr' => $specific 
+	{ 
+		'title' => "Process $procid details", 
+		'infotext' => "All Details for specific proccess", 
+		'fields'=> \@fields, 
+		'curr' => $specific 
+	};
+};
+prefix '/files' => sub {
+	get '/show' => sub {
+		my $location = ''; 
+		my $files = &FileHandler::ShowDir($location);	
+		template 'FilesBrowser',  
+		{
+			'title' => "Files Browser", 
+			'infotext' => "a simple file browser", 
+			'list' => $files, 
+			'location' => $location
+		};
+	};
+	get qr{/show/(.*)}  => sub {
+		my ($location) = splat;
+		my $files = &FileHandler::ShowDir($location);	
+		template 'FilesBrowser',  
+		{
+			'title' => "Files Browser", 
+			'infotext' => "a simple file browser", 
+			'list' => $files, 
+			'location' => $location
+		};
+	};
+	get qr{/singlefile/(.*)} => sub {
+		my ($location) = splat;
+		my @contents = &FileHandler::ShowFile($location);	
+		template 'FileEditor',  
+		{
+			'title' => "File Editor", 
+			'infotext' => "File:/$location", 
+			'contents' => \@contents, 
+			'location' => $location
+		};
+
+	};
+	post qr{/singlefile/(.*)} => sub {
+		my ($location) = splat;
+		my $contents = params->{contents};
+		&FileHandler::UpdateFile("/$location", $contents);
+		my @contents = &FileHandler::ShowFile($location);	
+		template 'FileEditor',  
+		{
+			'title' => "File Editor", 
+			'infotext' => "File:/$location", 
+			'contents' => \@contents, 
+			'location' => $location
+		};
+
+	};
+	get qr{/deletePath/(.*)} => sub {
+		my ($location) = splat;
+		my $ret= &FileHandler::RemovePath($location);
+		my $msg;
+		if(!$ret)
+		{ $msg = "an Error occured";}
+		$location =~ s/\/\w+$//;
+		my $files = &FileHandler::ShowDir($location);	
+		template 'FilesBrowser',  
+		{
+			'title' => "Files Browser", 
+			'infotext' => "a simple file browser", 
+			'list' => $files, 
+			'location' => $location
+		};
+
 	};
 };
 any ['get', 'post'] => '/login' => sub {
