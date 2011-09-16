@@ -9,6 +9,7 @@ there are still rough edges and future improvments if i will get the them might 
 	adding better error handling
 	making the templates looking better
 	using ajax instead of loading the pages again and again
+	using advanced perl libs instead of parsing passwd files
 	etc
 
 
