@@ -326,6 +326,18 @@ prefix '/files' => sub {
 		};
 
 	};
+	post qr{/findinfile/(.*)} => sub {
+		my($location) = splat;
+		my $searchTerm = params->{term};
+		my $filesToSearch = params->{fileterm};
+		my @results = &FileHandler::grepFiles($location, $filesToSearch, $searchTerm);
+		template 'findInFiles', 
+		{
+			'title' => "Results of Grep", 
+			'infotext' => "Found in $location", 
+			'resultset' => \@results
+		};
+	};
 	get qr{/deletePath/(.*)} => sub {
 		my ($location) = splat;
 		my $ret= &FileHandler::RemovePath($location);

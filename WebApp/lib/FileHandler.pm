@@ -1,6 +1,7 @@
 package FileHandler;
 
 use Modern::Perl;
+use File::Copy;
 our $_caller = "Web";
 
 # $1 = path to open
@@ -107,18 +108,76 @@ sub RemovePath($)
 	}
 	return 1;
 };
-
+sub MovePath($$)
+{
+	my ($oldpath, $newpath) = @_;
+	$oldpath =~ s/^\/*/\//;
+	$oldpath =~ s/\*hidden\*_//;		
+	$newpath =~ s/^\/*/\//;
+	if(!-e $oldpath)
+	{ return 0, "Oldpath not found to move"}
+	move($oldpath, $newpath);
+	return 1;
+};
 # $1 array ref of file list
 # $2 search term
 # $3 eqievalant to -v in grep
 sub grepFiles($$$)
 {
-	my($files, $term, $vflag) = @_;
+	my($location, $fileterm, $term) = @_;
+	my @resultset;
+	$location =~ s/^\/*/\//;
+	$location =~ s/\*hidden\*_//;
+	if(-f $location)
+	{
+		open(my $handle, "<", "$location");
+		my $i=0;
+		my @contents = <$handle>;
+		close $handle;
+		foreach my $line (@contents)
+		{
+			if($line =~ /$term/)
+			{ push(@resultset, "$location:$i:$line")}
+			$i++;
+		}
+		return @resultset;
+	}
+	elsif(-d "$location")
+	{
+		opendir(my $handle, "$location");
+		while(readdir($handle))
+		{
+			my $file = $_;
+			if($file eq "." || $file eq "..")
+			{ next; }
+			if($file =~ /$fileterm/)
+			{
+				push(@resultset, grepFiles("$location/$file", "", $term));
+			}
+		}
+		closedir $handle;
+		return @resultset;
+	}
+	else
+	{
+		return 0, "cannot find $location";
+	}
+
 
 };
-sub replaceInFiles($$$)
+sub replaceInFiles($$$$)
 {
-	my ($searchValue, $replaceValue, $files) = @_;
+	my ($location, $fileterm, $searchterm, $replace) = @_;
+	my @result = grepFiles($location, $fileterm, $searchterm);
+	foreach my $line (@result)
+	{
+		my @temp = split(/:/, $line);
+		open(my $handle, "<", $temp[0]);
+		my @contents = <$handle>;
+		close $handle;
+		$contents[$temp[1]] =~ s/$searchterm/$replace/;
+		UpdateFile($temp[0], join("", @contents));	
+	}
 };
 sub UpdateFile($$)
 {
@@ -147,7 +206,7 @@ sub CreateDir($)
 	my $path = $_[0];
 	if(-d $path || -f $path)
 	{ return 0, "name already in use";}
-	if(mkdir("/$path"))
+	if(mkdir("$path"))
 	{ return 1}
 	return 0, "Failed to create Dir";
 };

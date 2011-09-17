@@ -1,0 +1,10 @@
+<% IF session.logged_in %>
+<table>
+<% FOREACH line IN resultset %>
+<tr>
+<% temp = line.split(":") %>
+<td><a href="/files/singlefile<% temp.0 %>"><% temp.0 %></a>:<% temp.1 %>:<% temp.2 %></td>
+</tr>
+<% END %>
+</table>
+<% END %>

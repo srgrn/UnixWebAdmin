@@ -1,6 +1,7 @@
 <% IF session.logged_in %>
 <a href="/files/addfile/<% location %>"><input type="button" value="Add File"></a><br/>
 <form action="/files/show/<% location %>" method="post"><input type="submit" value="Add Dir"/><input type="text" name="dirname"/></form>
+<form action="/files/findinfile/<% location %>" method="post"><input type="submit" value="Find"/>  Term:<input type="text" name="term">  FileRegex:<input type="text" name="fileterm"/></form>
 <table>
 	<tr>
 		<td colspan="2"><a href="/files/show/<% dir %>">..</a></td>

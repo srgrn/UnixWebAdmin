@@ -68,9 +68,11 @@ sub main()
 {
 #	my $ref = &FileHandler::ShowDir("/proc");
 #	say Dumper($ref);
-	my $path = "/check/toremove";
-	my $ret = &FileHandler::RemovePath($path);
-	print $ret, "\n";
+	my $path = "check/movedBrag";
+	my @ret = &FileHandler::grepFiles($path, '\w+\d+', '\w+');
+	print @ret, "\n";
+	#my $newpath ="check/movedBrag";
+	#&FileHandler::MovePath($path, $newpath);	
 }
 
 
