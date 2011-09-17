@@ -227,48 +227,102 @@ prefix '/files' => sub {
 	get '/show' => sub {
 		my $location = ''; 
 		my $files = &FileHandler::ShowDir($location);	
+        my $dirpath = $location;
 		template 'FilesBrowser',  
 		{
 			'title' => "Files Browser", 
 			'infotext' => "a simple file browser", 
 			'list' => $files, 
-			'location' => $location
+			'location' => $location, 
+			'dir' => $dirpath
 		};
 	};
 	get qr{/show/(.*)}  => sub {
 		my ($location) = splat;
 		my $files = &FileHandler::ShowDir($location);	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
 		template 'FilesBrowser',  
 		{
 			'title' => "Files Browser", 
 			'infotext' => "a simple file browser", 
 			'list' => $files, 
-			'location' => $location
+			'location' => $location, 
+			'dir' => $dirpath
 		};
+	};
+	post qr{/show/(.*)} => sub {
+		my ($location) = splat;
+		my $dirname = params->{dirname};
+		my $infotext = "Created dir $dirname in $location";
+		if(!&FileHandler::CreateDir("$location/$dirname"))
+		{ $infotext = "Error creating Dir $dirname"; }
+		my $files = &FileHandler::ShowDir($location);	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
+		template 'FilesBrowser',  
+		{
+			'title' => "Files Browser", 
+			'infotext' => $infotext, 
+			'list' => $files, 
+			'location' => $location, 
+			'dir' => $dirpath
+		};
+
 	};
 	get qr{/singlefile/(.*)} => sub {
 		my ($location) = splat;
 		my @contents = &FileHandler::ShowFile($location);	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
 		template 'FileEditor',  
 		{
 			'title' => "File Editor", 
 			'infotext' => "File:/$location", 
 			'contents' => \@contents, 
-			'location' => $location
+			'location' => $location, 
+			'dir' => $dirpath, 
+			'mode' => 'Update'
 		};
 
+	};
+	get qr{/addfile/(.*)} => sub {
+		my ($location) = splat;
+		my @contents = "";	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
+		template 'FileEditor',  
+		{
+			'title' => "File Editor", 
+			'infotext' => "File:/$location", 
+			'contents' => \@contents, 
+			'location' => $location, 
+			'dir' => $dirpath, 
+			'mode' => "Create"
+		};
+	
 	};
 	post qr{/singlefile/(.*)} => sub {
 		my ($location) = splat;
 		my $contents = params->{contents};
-		&FileHandler::UpdateFile("/$location", $contents);
+		if(params->{submit} eq "Update")
+		{&FileHandler::UpdateFile("/$location", $contents);}
+		else
+		{ 
+			$location .= "/" . params->{filename};
+			&FileHandler::CreateFile("/$location",  $contents);
+		}
 		my @contents = &FileHandler::ShowFile($location);	
+		my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
 		template 'FileEditor',  
 		{
 			'title' => "File Editor", 
 			'infotext' => "File:/$location", 
 			'contents' => \@contents, 
-			'location' => $location
+			'location' => $location, 
+			'dir' => $dirpath, 
+			'mode' => "Update"
 		};
 
 	};
@@ -278,14 +332,17 @@ prefix '/files' => sub {
 		my $msg;
 		if(!$ret)
 		{ $msg = "an Error occured";}
-		$location =~ s/\/\w+$//;
+		$location =~ s/\w+\.*\w*\/*$//;
+        my $dirpath = $location;
+		$dirpath =~ s/\w+\.*\w*\/*$//;
 		my $files = &FileHandler::ShowDir($location);	
 		template 'FilesBrowser',  
 		{
 			'title' => "Files Browser", 
 			'infotext' => "a simple file browser", 
 			'list' => $files, 
-			'location' => $location
+			'location' => $location, 
+			'dir' => $dirpath
 		};
 
 	};

@@ -1,11 +1,14 @@
 <% IF session.logged_in %>
 <form action="/files/singlefile/<% location %>" method='post'>
-	<a href="/files/show/<% location %>/..">Back to Directory</a><br/>
-	<input type="submit" name="submit" value="Update"/>
+	<a href="/files/show/<% dir %>">Back to Directory</a><br/>
+	<% IF mode == 'Create' %>
+	<input type="text" name="filename"/>
+	<% END %>
+	<input type="submit" name="submit" value="<% mode %>"/>
 		<textarea name="contents" rows="20" cols="80">
 <% contents.join('') %>
 	</textarea>
 	<input type="submit" name="submit" value="Update"/><br/>
-	<a href="/files/show/<% location %>/..">Back to Directory</a><br/>
+	<a href="/files/show/<% dir %>">Back to Directory</a><br/>
 	</form>
 <% END %>

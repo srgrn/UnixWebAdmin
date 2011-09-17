@@ -66,8 +66,11 @@ sub checkAddRemoveNewGroup()
 
 sub main()
 {
-	my $ref = &FileHandler::ShowDir("/proc");
-	say Dumper($ref);
+#	my $ref = &FileHandler::ShowDir("/proc");
+#	say Dumper($ref);
+	my $path = "/check/toremove";
+	my $ret = &FileHandler::RemovePath($path);
+	print $ret, "\n";
 }
 
 

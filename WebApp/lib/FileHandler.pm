@@ -83,8 +83,8 @@ sub RemovePath($)
 	$path =~ s/\*hidden\*_//;		
 	if(-d $path)
 	{
-		opendir(DIR, $path);
-		while(readdir(DIR))
+		opendir(my $handle, $path);
+		while(readdir($handle))
 		{
 			if($_ ne "." && $_ ne ".." )
 			{
@@ -98,7 +98,7 @@ sub RemovePath($)
 				}
 			}
 		}
-		closedir(DIR);
+		closedir($handle); #there is a bug here
 		rmdir($path);
 	}
 	else
@@ -131,5 +131,24 @@ sub UpdateFile($$)
 	close FILE;
 	return 1;
 
+};
+sub CreateFile($$)
+{
+	my ($path, $contents) = @_;
+	if(-f $path)
+	{ return 0, "File already exists";}
+	open(FILE, ">", $path);
+	print FILE $contents;
+	close FILE;
+	return 1;
+};
+sub CreateDir($)
+{
+	my $path = $_[0];
+	if(-d $path || -f $path)
+	{ return 0, "name already in use";}
+	if(mkdir("/$path"))
+	{ return 1}
+	return 0, "Failed to create Dir";
 };
 1;

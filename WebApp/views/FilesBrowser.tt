@@ -1,8 +1,9 @@
 <% IF session.logged_in %>
 <a href="/files/addfile/<% location %>"><input type="button" value="Add File"></a><br/>
+<form action="/files/show/<% location %>" method="post"><input type="submit" value="Add Dir"/><input type="text" name="dirname"/></form>
 <table>
 	<tr>
-		<td colspan="2"><a href="/files/show/<% location %>/..">..</a></td>
+		<td colspan="2"><a href="/files/show/<% dir %>">..</a></td>
 	</tr>
 <% FOREACH file IN list.keys %>
 <tr>
