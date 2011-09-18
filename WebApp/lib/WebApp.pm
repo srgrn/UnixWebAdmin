@@ -172,9 +172,46 @@ post '/edituser/:username' => sub {
 		'title' => "All Users", 
 		'infotext' => $infotext
 	};
-
-
 };
+get '/changepassword/:user' => sub {
+	my $user = params->{user};
+	template 'changePassword' , 
+	{
+		'title' => "Change $user password", 
+		'infotext' => "Change password", 
+		'username' => $user
+	};
+};
+post '/changepassword/:user' => sub {
+	my $user = params->{user};
+	my $newpass = params->{newpass};
+	my $retype = params->{retype};
+	if($newpass ne $retype)
+	{
+		template 'changePassword', 
+		{
+			'title' => "Change $user password", 
+			'infotext' => "Passwords are not the same", 
+			'username' => $user
+		};
+	}
+	else
+	{
+		my ($ret, $msg) = &UserHandler::changePassword($user, $newpass);
+		if($ret)
+		{ $msg = "Change password for $user";}
+		my $details= &UserHandler::userDetails($user);
+		my @usergroups = &UserHandler::getUserGroups($user);
+		template 'edituser' , 
+		{
+			'details' => $details,
+			'groups' => \@usergroups, 
+			'title' => "Edit User $user", 
+			'infotext' => $msg
+		};
+	}
+};
+
 get '/deleteUser/:username' => sub {
 	my $username = param 'username';
 	my ($output, $infotext) = &UserHandler::RemoveUser($username);
@@ -337,6 +374,15 @@ prefix '/files' => sub {
 			'infotext' => "Found in $location", 
 			'resultset' => \@results
 		};
+	};
+	post qr{/replaceinfile/(.*)} => sub {
+		my($location) = splat;
+		my $searchTerm = params->{term};
+		my $filesToSearch = params->{fileterm};
+		my $repstring = params->{repstring};
+		my @results = &FileHandler::replaceInFiles($location, $filesToSearch, $searchTerm, $repstring);
+		my $newurl = "/files/show/$location";
+		redirect $newurl;
 	};
 	get qr{/deletePath/(.*)} => sub {
 		my ($location) = splat;

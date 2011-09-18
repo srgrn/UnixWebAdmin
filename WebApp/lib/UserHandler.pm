@@ -214,6 +214,32 @@ sub VerifyPassword($$)
 	{ return 1;}
 	return 0;
 };
+sub changePassword($$)
+{
+	my ($username,$pass) = @_;
+	initiated();
+	my $userline = FindUser($username);
+	my @temp = split(/:/,$userline);
+	my $uid = $temp[2];
+	my $pwd = (getpwuid($uid))[1];
+	my $change = 0;
+	for (my $i=0;$i<=$#shadow;$i++)
+	{
+		if($shadow[$i]=~/$username:/)
+		{ 
+			@temp = split(/:/, $shadow[$i]);
+			$temp[1] = crypt($pass, $pwd);
+			$shadow[$i] = join(":", @temp);
+			$change = 1;
+			last;
+		}
+	}
+	if(!$change)
+	{ return 0, "Cannot change password";}
+	WriteConfFile($shadowFile, @shadow);
+	init();
+	return 1;
+};
 sub getUserGroups($)
 {
 	my $username = $_[0];

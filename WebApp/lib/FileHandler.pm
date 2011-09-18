@@ -175,7 +175,7 @@ sub replaceInFiles($$$$)
 		open(my $handle, "<", $temp[0]);
 		my @contents = <$handle>;
 		close $handle;
-		$contents[$temp[1]] =~ s/$searchterm/$replace/;
+		$contents[$temp[1]] =~ s/$searchterm/$replace/g;
 		UpdateFile($temp[0], join("", @contents));	
 	}
 };
