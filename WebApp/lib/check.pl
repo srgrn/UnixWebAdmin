@@ -1,4 +1,4 @@
-use Data::Dumper;
+use Data::Dumper::Simple;
 use feature 'say';
 require ProcessHandler;
 require UserHandler;
@@ -71,8 +71,10 @@ sub main()
 #	my $path = "check/movedBrag";
 #	my @ret = &FileHandler::grepFiles($path, '\w+\d+', '\w+');
 #	print @ret, "\n";
-	#my $newpath ="check/movedBrag";
-	#&FileHandler::MovePath($path, $newpath);
+	my $newpath ="check/movedBrag/bcd";
+	my $ret = &FileHandler::getFileDetails($newpath);
+	say Dumper($ret);
+
 }
 
 

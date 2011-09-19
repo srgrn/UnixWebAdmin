@@ -2,6 +2,7 @@ package FileHandler;
 
 use Modern::Perl;
 use File::Copy;
+use Fcntl ':mode';
 our $_caller = "Web";
 
 # $1 = path to open
@@ -209,5 +210,22 @@ sub CreateDir($)
 	if(mkdir("$path"))
 	{ return 1}
 	return 0, "Failed to create Dir";
+};
+sub getFileDetails($)
+{
+	my $path = $_[0];
+	$path =~ s/^\/*/\//;
+	$path =~ s/\*hidden\*_//;
+	my @temp = stat($path);
+	my $ret->{'path'} = $path;
+	$ret->{'permissions'} = sprintf "%04o",  S_IMODE($temp[2]);
+	$ret->{'size'} = $temp[7];
+	$ret->{'blocks'}= $temp[12];
+	$ret->{'owner'} = getpwuid($temp[4]); # i could have done this using my own functions but it will require using an extra lib
+	$ret->{'group'} = getgrgid($temp[5]); # i could have done this using my own functions but it will require using an extra lib
+	$ret->{'lastchange'} = localtime($temp[9]);
+	$ret->{'lastaccess'} = localtime($temp[8]);
+
+	return $ret;
 };
 1;

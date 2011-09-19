@@ -1,0 +1,11 @@
+<% IF session.logged_in %>
+<a href="/files/show/<% dir %>">Back</a>
+<table>
+<% FOREACH key IN details.keys %>
+<tr>
+	<td><% key %></td>
+	<td><% details.$key %></td>
+</tr>
+<% END %>
+</table>
+<% END %>

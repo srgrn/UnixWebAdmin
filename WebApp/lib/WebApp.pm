@@ -323,6 +323,21 @@ prefix '/files' => sub {
 		};
 
 	};
+	get qr{/filedetails/(.*)} => sub {
+		my ($location) = splat;
+		my $details =  &FileHandler::getFileDetails($location);	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
+		template 'fileDetails',  
+		{
+			'title' => "File Details", 
+			'infotext' => "/$location details", 
+			'details' => $details, 
+			'dir' => $dirpath, 
+		};
+
+	};
+
 	get qr{/addfile/(.*)} => sub {
 		my ($location) = splat;
 		my @contents = "";	

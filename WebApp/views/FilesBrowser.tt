@@ -14,6 +14,7 @@
 <% ELSE %>
 <td><a href="/files/singlefile<% list.$file.fullpath %>"><% list.$file.name %></a></td>
 <% END %>
+<td><a href="/files/filedetails<% list.$file.fullpath %>">Details</a></td>
 <td><a href="/files/deletePath<% list.$file.fullpath %>">Delete</a></td>
 </tr>
 <% END %>
