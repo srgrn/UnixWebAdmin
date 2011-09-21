@@ -399,6 +399,48 @@ prefix '/files' => sub {
 		my $newurl = "/files/show/$location";
 		redirect $newurl;
 	};
+	post qr{/chmod/(.*)} => sub {
+		my ($location) = splat;
+		my $mode = params->{mode};
+		my ($ret, $msg) = &FileHandler::chmodFile($location, $mode);
+		if($ret)
+		{ $msg = "Change file permissions to $mode";}
+		my $details =  &FileHandler::getFileDetails($location);	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
+		template 'fileDetails',  
+		{
+			'title' => "File Details", 
+			'infotext' => $msg, 
+			'details' => $details, 
+			'dir' => $dirpath, 
+		};
+	};
+	post qr{/chown/(.*)} => sub {
+		my ($location) = splat;
+		my $user = params->{user};
+		my $group = params->{group};
+		my $ret=0;
+		my $msg = "Not enough details";
+		if($user ne "" && $group ne "")
+		{
+			my $uid = &UserHandler::getID($user, "user");
+			my $gid = &UserHandler::getID($group, "group");
+			($ret, $msg) = &FileHandler::chownFile($location, $uid, $gid);
+		}
+		if($ret)
+		{ $msg = "Change file ownership";}
+		my $details =  &FileHandler::getFileDetails($location);	
+        my $dirpath = $location;
+        $dirpath =~ s/\w+\.*\w*\/*$//;
+		template 'fileDetails',  
+		{
+			'title' => "File Details", 
+			'infotext' => $msg, 
+			'details' => $details, 
+			'dir' => $dirpath, 
+		};
+	};
 	get qr{/deletePath/(.*)} => sub {
 		my ($location) = splat;
 		my $ret= &FileHandler::RemovePath($location);

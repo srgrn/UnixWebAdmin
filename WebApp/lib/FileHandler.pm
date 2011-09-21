@@ -228,4 +228,29 @@ sub getFileDetails($)
 
 	return $ret;
 };
+sub chmodFile($$)
+{
+	my ($path, $newstat) = @_;
+	$path =~ s/^\/*/\//;
+	$path =~ s/\*hidden\*_//;
+	if(! -f $path)
+	{ return 0, "No such file/Directory";}
+	my $ret = chmod oct($newstat), $path;
+	if(!$ret)
+	{return 0, "Failed to chmod";}
+	return 1;
+};
+sub chownFile($$$)
+{
+	my ($path, $uid, $gid) = @_;
+	$path =~ s/^\/*/\//;
+	$path =~ s/\*hidden\*_//;
+	if(! -f $path)
+	{ return 0, "No such file/Directory";}
+	my $ret = chown $uid, $gid, $path;
+	if(!$ret)
+	{return 0, "Failed to chown";}
+	return 1;
+
+};
 1;

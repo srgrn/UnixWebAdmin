@@ -394,6 +394,30 @@ sub removeUserFromGroup($$)
 	}
 	return 0, "no Such group";
 };
+sub FindGroup($)
+{
+	my $groupname = $_[0];
+	initiated();
+	foreach my $line (@group)
+	{
+		my @curr = split(/:/, $line);
+		if ($curr[0] eq $groupname)
+			{ return $line };
+	}
+	return 0;
+};
+sub getID($$)
+{
+	my ($name, $type) = @_;
+	my $line;
+	if($type eq "group")
+	{ $line = FindGroup($name);}
+	elsif($type eq "user")
+	{ $line = FindUser($name);}
+	my @temp = split(/:/, $line);
+	my $id = $temp[2];
+	return $id;
+};
 
 # $1 = $pathtofile 
 # $2 = $array to write

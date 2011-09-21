@@ -8,4 +8,52 @@
 </tr>
 <% END %>
 </table>
+<form action="/files/chmod<% details.path %>" method="post">
+	<script language="javascript">
+		function validate(f){
+			var owner=0;
+			var group=0;
+			var other=0;
+			var o=f['OWNER'];
+			for(var i=0;i<o.length;i++){
+				if(o[i].checked)
+					owner+= parseInt(o[i].value);
+					}
+			var g=f['GROUP'];
+			for(var i=0;i<g.length;i++){
+					if(g[i].checked)
+					group+= parseInt(g[i].value);
+					}
+
+			var r=f['OTHER'];
+			for(var i=0;i<r.length;i++){
+					if(r[i].checked)
+					other+= parseInt(r[i].value);
+					}
+
+			var mode = '0' + owner.toString() + group.toString() + other.toString();
+			f['mode'].value = mode;
+			f.submit();
+		}						
+	</script>
+	Update file Permissions:<br/>
+	<% FOR perm IN ["OWNER", "GROUP", "OTHER"] %>
+	<table>
+		<tr>
+			<td><% perm %>:</td>
+			<td>read:<input type="checkbox" name="<% perm %>" value="4"/></td>
+			<td>write:<input type="checkbox" name="<% perm %>" value="2"/></td>
+			<td>exec:<input type="checkbox" name="<% perm %>" value="1"/></td>
+		</tr>
+	</table>
+	<% END %>
+	<br/><input type="button" value="chmod" onclick="validate(this.form)">
+	<input type="hidden" name="mode"/>
+</form>
+<form action="/files/chown<% details.path %>" method="post">
+	Update File owner and group:<br/>
+	Username: <input type="textbox" name="user"/>
+	Group:    <input type="textbox" name="group"/><br/>
+	<input type="submit" value="chown"/>
+</form>
 <% END %>

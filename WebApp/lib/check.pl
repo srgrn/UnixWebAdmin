@@ -72,7 +72,10 @@ sub main()
 #	my @ret = &FileHandler::grepFiles($path, '\w+\d+', '\w+');
 #	print @ret, "\n";
 	my $newpath ="check/movedBrag/bcd";
-	my $ret = &FileHandler::getFileDetails($newpath);
+	my $newperm = "0777";
+	my $uid = &UserHandler::getID("zimbler", "user");
+	print $uid, "\n";
+	my $ret = &FileHandler::chmodFile($newpath, $newperm);
 	say Dumper($ret);
 
 }
